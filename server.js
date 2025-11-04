@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const User = require("./models/user.model");
 const bcrypt = require("bcrypt");
+const Item = require("./models/item.model");
 
 dotenv.config();
 const app = express();
@@ -83,6 +84,34 @@ app.post("/login", async (req, res) => {
         const { password: _, ...userWithoutPassword } = user.toObject();
         res.json({ message: "✅ Login successful", user: userWithoutPassword });
 
+    } catch (err) {
+        res.status(500).json({ error: "Server error: " + err.message });
+    }
+});
+
+// File: server.js (add these routes anywhere after app is created)
+app.get("/item/coffee/getall", async (req, res) => {
+    try {
+        const items = await Item.find({ category: "coffee" });
+        res.json(items);
+    } catch (err) {
+        res.status(500).json({ error: "Server error: " + err.message });
+    }
+});
+
+app.get("/item/chocolate/getall", async (req, res) => {
+    try {
+        const items = await Item.find({ category: "chocolate" });
+        res.json(items);
+    } catch (err) {
+        res.status(500).json({ error: "Server error: " + err.message });
+    }
+});
+
+app.get("/item/other/getall", async (req, res) => {
+    try {
+        const items = await Item.find({ category: "other" });
+        res.json(items);
     } catch (err) {
         res.status(500).json({ error: "Server error: " + err.message });
     }
