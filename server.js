@@ -117,6 +117,22 @@ app.get("/item/other/getall", async (req, res) => {
     }
 });
 
+// javascript
+app.get("/items/debug", async (req, res) => {
+    try {
+        const total = await Item.countDocuments();
+        const counts = {
+            coffee: await Item.countDocuments({ category: "coffee" }),
+            chocolate: await Item.countDocuments({ category: "chocolate" }),
+            other: await Item.countDocuments({ category: "other" })
+        };
+        const sample = await Item.find().limit(10).lean();
+        res.json({ total, counts, sample });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // --- Chạy server ---
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
