@@ -1,5 +1,5 @@
 const express = require("express");
-const router = express.Router();
+const notiRouter = express.Router();
 const FcmToken = require("../models/fcmToken.model");
 
 // router.post("/savetoken", async (req, res) => {
@@ -29,8 +29,12 @@ const FcmToken = require("../models/fcmToken.model");
 //   }
 // });
 
-router.get("/testnoti", async (req, res) => {
+notiRouter.get("/", async (req, res) => {
+  res.json("Default notificationRoutes");
+});
+
+notiRouter.get("/fcm", async (req, res) => {
   res.json("Hello");
 });
 
-module.exports = router;
+module.exports = notiRouter;

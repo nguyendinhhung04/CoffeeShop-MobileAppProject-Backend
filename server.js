@@ -125,7 +125,7 @@ app.get("/items", async (req, res) => {
 app.use("/orders", orderRoutes);
 
 //Routes của notifications
-app.use("/noti", notificationRoutes);
+app.use("/fcm", notificationRoutes);
 
 // Lấy toàn bộ danh sách món ăn
 app.get("/testconnection", async (req, res) => {
