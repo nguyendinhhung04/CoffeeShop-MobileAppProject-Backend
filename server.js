@@ -5,6 +5,7 @@ const User = require("./models/users.model");
 const bcrypt = require("bcrypt");
 const Item = require("./models/products.model");
 const orderRoutes = require("./routes/orders.routes");
+const notificationRoutes = require("./routes/notifications.routes");
 
 dotenv.config();
 const app = express();
@@ -88,27 +89,28 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// THÊM ĐOẠN NÀY VÀO server.js CỦA BẠN
-app.get("/items", async (req, res) => {
-  try {
-    const { category, search } = req.query;
-    let query = { isActive: true };
+// // THÊM ĐOẠN NÀY VÀO server.js CỦA BẠN
+// app.get("/items", async (req, res) => {
+//   try {
+//     const { category, search } = req.query;
+//     let query = { isActive: true };
 
-    if (category && category !== "all") {
-      query.category = category;
-    }
-    if (search) {
-      query.name = { $regex: search, $options: "i" };
-    }
+//     if (category && category !== "all") {
+//       query.category = category;
+//     }
+//     if (search) {
+//       query.name = { $regex: search, $options: "i" };
+//     }
 
-    const items = await Item.find(query).select(
-      "name description basePrice image_url category sizes tempOptions toppings"
-    );
-    res.json(items);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+//     const items = await Item.find(query).select(
+//       "name description basePrice image_url category sizes tempOptions toppings"
+//     );
+//     res.json(items);
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// });
+
 // Lấy toàn bộ danh sách món ăn
 app.get("/items", async (req, res) => {
   try {
@@ -122,12 +124,13 @@ app.get("/items", async (req, res) => {
 // Routes của order
 app.use("/orders", orderRoutes);
 
+//Routes của notifications
+app.use("/noti", notificationRoutes);
+
 // Lấy toàn bộ danh sách món ăn
 app.get("/testconnection", async (req, res) => {
   res.json("Hello");
 });
-
-
 
 // --- Chạy server ---
 const PORT = process.env.PORT || 3000;
