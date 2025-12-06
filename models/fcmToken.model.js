@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 
-const fcmToken = new mongoose.Schema({
+const FcmTokenSchema = new mongoose.Schema({
   userId: mongoose.Schema.Types.ObjectId,
   deviceToken: String,
 });
+
+module.exports = mongoose.model("FcmToken", FcmTokenSchema);
