@@ -2,7 +2,7 @@ const express = require("express");
 const notiRouter = express.Router();
 const FcmToken = require("../models/fcmToken.model");
 
-router.post("/savetoken", async (req, res) => {
+notiRouter.post("/savetoken", async (req, res) => {
   try {
     const { userId, deviceToken } = req.body;
 
