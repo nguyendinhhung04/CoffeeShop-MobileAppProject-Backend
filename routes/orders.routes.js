@@ -1,6 +1,9 @@
+import admin from "../config/firebase.js";
+
 const express = require("express");
 const router = express.Router();
 const Order = require("../models/orders.model");
+const FcmToken = require("../models/fcmToken.model");
 
 // --- Tạo đơn ---
 router.post("/", async (req, res) => {
@@ -110,6 +113,32 @@ router.patch("/:id/status", async (req, res) => {
     if (!order) {
       return res.status(404).json({ error: "Order not found" });
     }
+
+    try {
+      const fcmTokens = await FcmToken.find({ userId: order.userId });
+      if (!fcmTokens) {
+        return res.status(400).json({ error: "User has no FCM token" });
+      }
+
+      const message = {
+        notification: {
+          title : "Hello form new notification"
+        },
+        token: fcmTokens,
+      };
+      const response = await admin.messaging().send(message);
+      res.json({
+        message: "Notification sent successfully!",
+        firebaseResponse: response
+      });
+
+
+    }
+    catch(err)
+    {
+      res.status(500).json({ error: err.message });
+    }
+
 
     res.json({
       message: "Order status updated successfully",
