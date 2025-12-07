@@ -1,5 +1,4 @@
-import admin from "../config/firebase.js";
-
+const admin = require("../config/firebase.js");
 const express = require("express");
 const router = express.Router();
 const Order = require("../models/orders.model");
@@ -23,9 +22,9 @@ router.post("/", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     const order = await Order.findByIdAndUpdate(
-      req.params.id,
-      { status: "Cancelled" },
-      { new: true }
+        req.params.id,
+        { status: "Cancelled" },
+        { new: true }
     );
 
     if (!order) {
@@ -41,14 +40,13 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-
 // --- Xác nhận đơn (cập nhật trạng thái thành Confirmed) ---
 router.post("/:id", async (req, res) => {
   try {
     const order = await Order.findByIdAndUpdate(
-      req.params.id,
-      { status: "Confirmed" },
-      { new: true }
+        req.params.id,
+        { status: "Confirmed" },
+        { new: true }
     );
 
     if (!order) {
@@ -68,9 +66,9 @@ router.post("/:id", async (req, res) => {
 router.put("/:id", async (req, res) => {
   try {
     const updatedOrder = await Order.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
+        req.params.id,
+        req.body,
+        { new: true }
     );
 
     if (!updatedOrder) {
@@ -105,45 +103,58 @@ router.patch("/:id/status", async (req, res) => {
     }
 
     const order = await Order.findByIdAndUpdate(
-      req.params.id,
-      { status },
-      { new: true }
+        req.params.id,
+        { status },
+        { new: true }
     );
 
     if (!order) {
       return res.status(404).json({ error: "Order not found" });
     }
 
+    // Send notification
     try {
       const fcmTokens = await FcmToken.find({ userId: order.userId });
-      if (!fcmTokens) {
-        return res.status(400).json({ error: "User has no FCM token" });
+
+      if (!fcmTokens || fcmTokens.length === 0) {
+        console.log("No FCM tokens found for user");
+        return res.json({
+          message: "Order status updated successfully (no notification sent - no tokens)",
+          order,
+        });
       }
 
-      const message = {
-        notification: {
-          title : "Hello form new notification"
-        },
-        token: fcmTokens,
-      };
-      const response = await admin.messaging().send(message);
-      res.json({
-        message: "Notification sent successfully!",
-        firebaseResponse: response
+      // Send notification to each device
+      const notifications = fcmTokens.map(async (tokenDoc) => {
+        try {
+          const message = {
+            notification: {
+              title: "Order Status Update",
+              body: `Your order status has been updated to ${status}`
+            },
+            token: tokenDoc.deviceToken,
+          };
+          return await admin.messaging().send(message);
+        } catch (error) {
+          console.error(`Failed to send notification to token ${tokenDoc.deviceToken}:`, error);
+          return null;
+        }
       });
 
+      await Promise.all(notifications);
 
+      return res.json({
+        message: "Order status updated and notifications sent successfully",
+        order,
+      });
+    } catch (notificationError) {
+      console.error("Notification error:", notificationError);
+      return res.json({
+        message: "Order status updated successfully (notification failed)",
+        order,
+        notificationError: notificationError.message
+      });
     }
-    catch(err)
-    {
-      res.status(500).json({ error: err.message });
-    }
-
-
-    res.json({
-      message: "Order status updated successfully",
-      order,
-    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -170,12 +181,10 @@ router.get("/filter", async (req, res) => {
       query.userId = userId;
     }
 
-    // lọc status bằng
     if (status) {
       query.status = status;
     }
 
-    // lọc status không bằng
     if (status_ne) {
       query.status = { $ne: status_ne };
     }
@@ -198,7 +207,5 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
-
 
 module.exports = router;

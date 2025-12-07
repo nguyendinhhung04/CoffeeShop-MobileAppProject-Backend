@@ -1,12 +1,20 @@
 const express = require("express");
 const notiRouter = express.Router();
 const FcmToken = require("../models/fcmToken.model");
+const admin = require("../config/firebase");
 
 
 
 notiRouter.post("/savetoken", async (req, res) => {
   try {
     const { userId, deviceToken } = req.body;
+
+    // Validate input
+    if (!userId || !deviceToken) {
+      return res.status(400).json({
+        error: "userId and deviceToken are required"
+      });
+    }
 
     // Sử dụng findOneAndUpdate với upsert: true
     const fcmToken = await FcmToken.findOneAndUpdate(
@@ -32,5 +40,31 @@ notiRouter.post("/savetoken", async (req, res) => {
 notiRouter.get("/", async (req, res) => {
   res.json("Default notificationRoutes");
 });
+
+notiRouter.post("/test", async (req, res) => {
+
+  const { token, title, body } = req.body;
+
+  // Validate input
+  if (!token || !title || !body) {
+    return res.status(400).json({
+      error: "token, title, and body are required"
+    });
+  }
+
+  const message = {
+    notification: { title, body },
+    token: token
+  };
+
+  try {
+    await admin.messaging().send(message);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+
+});
+
 
 module.exports = notiRouter;
