@@ -7,8 +7,14 @@ const Item = require("./models/products.model");
 const orderRoutes = require("./routes/orders.routes");
 const notificationRoutes = require("./routes/notifications.routes");
 
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpecs = require("./config/swagger");
+
 dotenv.config();
 const app = express();
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+
 app.use(express.json());
 
 // --- Kết nối MongoDB ---
@@ -110,16 +116,6 @@ app.get("/items", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
-// // Lấy toàn bộ danh sách món ăn
-// app.get("/items", async (req, res) => {
-//   try {
-//     const items = await Item.find(); // không filter => lấy tất cả
-//     res.json(items);
-//   } catch (err) {
-//     res.status(500).json({ error: "Server error: " + err.message });
-//   }
-// });
 
 // Routes của order
 app.use("/orders", orderRoutes);

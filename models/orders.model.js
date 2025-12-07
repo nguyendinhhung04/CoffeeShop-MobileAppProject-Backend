@@ -30,7 +30,7 @@ const DeliverySchema = new mongoose.Schema({
 
 const OrderSchema = new mongoose.Schema({
   userId: mongoose.Schema.Types.ObjectId,
-  orderDate: { type: Date, default: Date.now },
+  orderDate: { type: Date},
   status: String,
   paymentMethod: String,
   note: String,
