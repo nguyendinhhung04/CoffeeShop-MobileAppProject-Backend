@@ -17,7 +17,8 @@ const options = {
             }
         ],
         paths: swaggerDefinitions
-    }
+    },
+    apis: [] // Required by swagger-jsdoc, empty array since we define paths manually
 };
 
 const specs = swaggerJsdoc(options);

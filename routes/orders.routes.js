@@ -19,7 +19,7 @@ router.post("/", async (req, res) => {
 });
 
 // --- Hủy đơn (cập nhật trạng thái thành Cancelled) ---
-router.delete("/:id", async (req, res) => {
+router.delete("/usercancell/:id", async (req, res) => {
   try {
     const order = await Order.findByIdAndUpdate(
         req.params.id,
@@ -41,7 +41,7 @@ router.delete("/:id", async (req, res) => {
 });
 
 // --- Xác nhận đơn (cập nhật trạng thái thành Confirmed) ---
-router.post("/:id", async (req, res) => {
+router.post("/userconfirm/:id", async (req, res) => {
   try {
     const order = await Order.findByIdAndUpdate(
         req.params.id,
