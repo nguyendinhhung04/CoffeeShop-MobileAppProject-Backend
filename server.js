@@ -89,37 +89,37 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// // THÊM ĐOẠN NÀY VÀO server.js CỦA BẠN
-// app.get("/items", async (req, res) => {
-//   try {
-//     const { category, search } = req.query;
-//     let query = { isActive: true };
-
-//     if (category && category !== "all") {
-//       query.category = category;
-//     }
-//     if (search) {
-//       query.name = { $regex: search, $options: "i" };
-//     }
-
-//     const items = await Item.find(query).select(
-//       "name description basePrice image_url category sizes tempOptions toppings"
-//     );
-//     res.json(items);
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// });
-
-// Lấy toàn bộ danh sách món ăn
+// THÊM ĐOẠN NÀY VÀO server.js CỦA BẠN
 app.get("/items", async (req, res) => {
   try {
-    const items = await Item.find(); // không filter => lấy tất cả
+    const { category, search } = req.query;
+    let query = { isActive: true };
+
+    if (category && category !== "all") {
+      query.category = category;
+    }
+    if (search) {
+      query.name = { $regex: search, $options: "i" };
+    }
+
+    const items = await Item.find(query).select(
+      "name description basePrice image_url category sizes tempOptions toppings"
+    );
     res.json(items);
   } catch (err) {
-    res.status(500).json({ error: "Server error: " + err.message });
+    res.status(500).json({ error: err.message });
   }
 });
+
+// // Lấy toàn bộ danh sách món ăn
+// app.get("/items", async (req, res) => {
+//   try {
+//     const items = await Item.find(); // không filter => lấy tất cả
+//     res.json(items);
+//   } catch (err) {
+//     res.status(500).json({ error: "Server error: " + err.message });
+//   }
+// });
 
 // Routes của order
 app.use("/orders", orderRoutes);
