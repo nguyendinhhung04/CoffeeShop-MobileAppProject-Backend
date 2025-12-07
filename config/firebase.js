@@ -9,7 +9,7 @@
 // export default admin;
 
 const admin = require("firebase-admin");
-const serviceAccount = require("../coffeeshop-d92d4-firebase-adminsdk-fbsvc-83212fabea.json");
+const serviceAccount = require("/etc/secrets/coffeeshop-d92d4-firebase-adminsdk-fbsvc-64f8326fbe.json");
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
