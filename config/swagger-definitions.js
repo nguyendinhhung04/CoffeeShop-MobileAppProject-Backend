@@ -631,7 +631,95 @@ const swaggerDefinitions = {
                 500: { description: "Server error" }
             }
         }
-    }
+    },
+
+    // ============== FAVORITES ROUTES ==============
+    "/favorites": {
+        post: {
+            summary: "Add item to favorites",
+            tags: ["Favorites"],
+            requestBody: {
+                required: true,
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: "object",
+                            properties: {
+                                userId: {
+                                    type: "string",
+                                    description: "ID of the user"
+                                },
+                                itemId: {
+                                    type: "string",
+                                    description: "ID of the item/product to favorite"
+                                }
+                            },
+                            required: ["userId", "itemId"]
+                        }
+                    }
+                }
+            },
+            responses: {
+                201: { description: "Favorite added successfully" },
+                400: { description: "Bad request - userId and itemId are required" },
+                409: { description: "Favorite already exists" },
+                500: { description: "Server error" }
+            }
+        },
+        delete: {
+            summary: "Remove favorite by userId and itemId",
+            tags: ["Favorites"],
+            requestBody: {
+                required: true,
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: "object",
+                            properties: {
+                                userId: {
+                                    type: "string",
+                                    description: "ID of the user"
+                                },
+                                itemId: {
+                                    type: "string",
+                                    description: "ID of the item/product to unfavorite"
+                                }
+                            },
+                            required: ["userId", "itemId"]
+                        }
+                    }
+                }
+            },
+            responses: {
+                200: { description: "Favorite removed successfully" },
+                400: { description: "Bad request - userId and itemId are required" },
+                404: { description: "Favorite not found" },
+                500: { description: "Server error" }
+            }
+        }
+    },
+    "/favorites/{id}": {
+        delete: {
+            summary: "Remove favorite by favorite ObjectId",
+            tags: ["Favorites"],
+            parameters: [
+                {
+                    in: "path",
+                    name: "id",
+                    required: true,
+                    schema: { type: "string" },
+                    description: "Favorite document ID (MongoDB ObjectId)"
+                }
+            ],
+            responses: {
+                200: { description: "Favorite removed successfully" },
+                400: { description: "Invalid favorite id" },
+                404: { description: "Favorite not found" },
+                500: { description: "Server error" }
+            }
+        }
+    },
+
 };
 
 module.exports = swaggerDefinitions;

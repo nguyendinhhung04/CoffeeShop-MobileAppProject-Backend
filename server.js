@@ -30,7 +30,8 @@ mongoose
 
 // --- Route test ---
 app.get("/", (req, res) => {
-  res.send("Hello from Express + MongoDB!");
+  // res.send("Hello from Express + MongoDB!");
+  res.redirect("/api-docs");
 });
 
 // Routes của user
