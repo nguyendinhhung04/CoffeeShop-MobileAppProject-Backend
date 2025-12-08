@@ -75,11 +75,11 @@ router.post("/login", async (req, res) => {
 router.put("/users/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, email, phone, addresses, password } = req.body;
+        const { fullname, email, phone, addresses, password } = req.body;
 
         // Chuẩn bị object update (không cho đổi username)
         const updateData = {
-            name,
+            fullname,
             email,
             phone,
             addresses
