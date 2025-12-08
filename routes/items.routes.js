@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const Item = require("../models/products.model.js");
+const Order = require("../models/orders.model.js");
 
 router.get("/", async (req, res) => {
     try {
@@ -26,53 +27,67 @@ router.get("/", async (req, res) => {
 
 router.get("/top-selling", async (req, res) => {
     try {
-        const topItems = await Item.aggregate([
-            {
-                $match: {
-                    status: { $in: ["Confirmed", "Delivering", "Delivered"] }
-                }
-            },
-            {
-                $unwind: "$items"
-            },
+        const statuses = ["Confirmed", "Delivering", "Delivered"];
+
+        const result = await Order.aggregate([
+            // Chỉ lấy đơn hàng có status hợp lệ
+            { $match: { status: { $in: statuses } } },
+
+            // Tách từng item trong đơn
+            { $unwind: "$items" },
+
+            // Gom nhóm theo productId và cộng dồn quantity
             {
                 $group: {
-                    _id: "$items.itemId",
-                    totalQuantity: { $sum: "$items.quantity" }
+                    _id: "$items.productId",
+                    totalSold: { $sum: "$items.quantity" }
                 }
             },
-            {
-                $sort: { totalQuantity: -1 }
-            },
-            {
-                $limit: 10
-            },
+
+            // Join sang bảng products
             {
                 $lookup: {
-                    from: "items",
+                    from: "products",
                     localField: "_id",
                     foreignField: "_id",
-                    as: "itemDetails"
+                    as: "product"
                 }
             },
-            {
-                $unwind: "$itemDetails"
-            },
+
+            // Lấy product object (không phải array)
+            { $unwind: "$product" },
+
+            // Sắp xếp theo số lượng bán giảm dần
+            { $sort: { totalSold: -1 } },
+
+            // Chỉ lấy 10 sản phẩm đầu tiên
+            { $limit: 10 },
+
+            // Format dữ liệu trả về
             {
                 $project: {
-                    _id: 1,
-                    totalQuantity: 1,
-                    name: "$itemDetails.name",
-                    basePrice: "$itemDetails.basePrice",
-                    image_url: "$itemDetails.image_url",
-                    category: "$itemDetails.category"
+                    _id: 0,
+                    productId: "$_id",
+                    name: "$product.name",
+                    image_url: "$product.image_url",
+                    totalSold: 1
                 }
             }
         ]);
 
-        res.json(topItems);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(200).json({
+            success: true,
+            message: "Top 10 best-selling products",
+            data: result
+        });
+
+    } catch (error) {
+        console.error("Error getting top-selling products:", error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error",
+            error: error.message
+        });
     }
 });
 
