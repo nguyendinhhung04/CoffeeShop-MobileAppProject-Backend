@@ -10,6 +10,7 @@ const notificationRoutes = require("./routes/notifications.routes");
 const userRoutes = require("./routes/users.routes");
 const comboRoutes = require("./routes/combos.routes");
 const itemRoutes = require("./routes/items.routes");
+const favouriteRoutes = require("./routes/favorites.routes");
 
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpecs = require("./config/swagger");
@@ -42,6 +43,8 @@ app.use("/orders", orderRoutes);
 app.use("/fcm", notificationRoutes);
 //Routes của combos
 app.use("/combos", comboRoutes);
+// Routes của favourites
+app.use("/favourites", favouriteRoutes);
 
 // Test connection route
 app.get("/testconnection", async (req, res) => {
