@@ -45,7 +45,7 @@ app.use("/fcm", notificationRoutes);
 //Routes của combos
 app.use("/combos", comboRoutes);
 // Routes của favourites
-app.use("/favourites", favouriteRoutes);
+app.use("/favorites", favouriteRoutes);
 
 // Test connection route
 app.get("/testconnection", async (req, res) => {

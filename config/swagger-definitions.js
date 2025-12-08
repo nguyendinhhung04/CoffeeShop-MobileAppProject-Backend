@@ -634,6 +634,45 @@ const swaggerDefinitions = {
     },
 
     // ============== FAVORITES ROUTES ==============
+    "/favorites/user/{userId}": {
+        get: {
+            summary: "Get all favorites by userId",
+            tags: ["Favorites"],
+            parameters: [
+                {
+                    in: "path",
+                    name: "userId",
+                    required: true,
+                    schema: { type: "string" },
+                    description: "User ID to get favorites for"
+                }
+            ],
+            responses: {
+                200: {
+                    description: "List of user's favorite items with populated product details",
+                    content: {
+                        "application/json": {
+                            schema: {
+                                type: "array",
+                                items: {
+                                    type: "object",
+                                    properties: {
+                                        _id: { type: "string" },
+                                        userId: { type: "string" },
+                                        productId: {
+                                            type: "object",
+                                            description: "Populated product details"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                500: { description: "Server error" }
+            }
+        }
+    },
     "/favorites": {
         post: {
             summary: "Add item to favorites",
@@ -719,6 +758,7 @@ const swaggerDefinitions = {
             }
         }
     },
+
 
 };
 

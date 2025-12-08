@@ -27,6 +27,18 @@ router.post("/", async (req, res) => {
     }
 });
 
+router.get("/:id", async (req, res) => {
+    //get favorite by userId
+    try {
+        const { id } = req.params;
+
+        const favorites = await Favorite.find({ userId: id });
+        res.json(favorites);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+})
+
 // --- API: remove favorite by userId + itemId ---
 router.delete("/", async (req, res) => {
     try {
@@ -48,22 +60,17 @@ router.delete("/", async (req, res) => {
     }
 });
 
-// --- API: remove favorite by favorite ObjectId (use Favorite only) ---
-router.delete("/:id", async (req, res) => {
+// --- API: get favorites by userId ---
+router.get("/user/:userId", async (req, res) => {
     try {
-        const { id } = req.params;
+        const { userId } = req.params;
 
-        const fav = await Favorite.findById(id);
-        if (!fav) {
-            return res.status(404).json({ error: "Favorite not found" });
-        }
+        const favorites = await Favorite.find({ userId })
+            .populate("productId") // populate product details
+            .sort({ _id: -1 }); // newest first
 
-        await fav.deleteOne();
-        res.json({ message: "Favorite removed successfully" });
+        res.json(favorites);
     } catch (err) {
-        if (err && err.name === "CastError") {
-            return res.status(400).json({ error: "Invalid favorite id" });
-        }
         res.status(500).json({ error: err.message });
     }
 });
