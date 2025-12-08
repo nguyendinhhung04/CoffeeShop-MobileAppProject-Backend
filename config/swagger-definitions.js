@@ -304,6 +304,50 @@ const swaggerDefinitions = {
             }
         }
     },
+    "/users/{id}": {
+        put: {
+            summary: "Update user information (cannot change username)",
+            tags: ["Users"],
+            parameters: [
+                {
+                    in: "path",
+                    name: "id",
+                    required: true,
+                    schema: { type: "string" }
+                }
+            ],
+            requestBody: {
+                required: true,
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: "object",
+                            properties: {
+                                name: { type: "string" },
+                                email: { type: "string" },
+                                phone: { type: "string" },
+                                password: { type: "string", description: "New password (optional)" },
+                                addresses: {
+                                    type: "object",
+                                    properties: {
+                                        street: { type: "string" },
+                                        ward: { type: "string" },
+                                        district: { type: "string" },
+                                        city: { type: "string" }
+                                    }
+                                },
+                                role: { type: "string" }
+                            }
+                        }
+                    }
+                }
+            },
+            responses: {
+                200: { description: "User updated successfully" },
+                404: { description: "User not found" }
+            }
+        }
+    },
 
     // ============== ITEMS/PRODUCTS ROUTES ==============
     "/items": {
@@ -342,6 +386,38 @@ const swaggerDefinitions = {
                                         sizes: { type: "array" },
                                         tempOptions: { type: "array" },
                                         toppings: { type: "array" }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                500: { description: "Server error" }
+            }
+        }
+    },
+
+    "/items/top-selling": {
+        get: {
+            summary: "Get top 10 best-selling items",
+            tags: ["Items"],
+            description: "Returns top 10 products sorted by total quantity sold in confirmed, delivering, and delivered orders",
+            responses: {
+                200: {
+                    description: "Top 10 best-selling items",
+                    content: {
+                        "application/json": {
+                            schema: {
+                                type: "array",
+                                items: {
+                                    type: "object",
+                                    properties: {
+                                        _id: { type: "string" },
+                                        totalQuantity: { type: "number" },
+                                        name: { type: "string" },
+                                        basePrice: { type: "number" },
+                                        image_url: { type: "string" },
+                                        category: { type: "string" }
                                     }
                                 }
                             }
@@ -441,6 +517,118 @@ const swaggerDefinitions = {
             tags: ["Test"],
             responses: {
                 200: { description: "Connection test response" }
+            }
+        }
+    },
+
+    // ============== COMBOS ROUTES ==============
+    "/combos": {
+        get: {
+            summary: "Get all combos",
+            tags: ["Combos"],
+            responses: {
+                200: { description: "List of all combos" },
+                500: { description: "Server error" }
+            }
+        },
+        post: {
+            summary: "Create a new combo",
+            tags: ["Combos"],
+            requestBody: {
+                required: true,
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: "object",
+                            properties: {
+                                name: { type: "string" },
+                                description: { type: "string" },
+                                category: { type: "string" },
+                                basePrice: { type: "number" },
+                                image_url: { type: "string" },
+                                discount: { type: "number" },
+                                items: { type: "array" }
+                            },
+                            required: ["name", "basePrice"]
+                        }
+                    }
+                }
+            },
+            responses: {
+                201: { description: "Combo created successfully" },
+                400: { description: "Bad request" }
+            }
+        }
+    },
+    "/combos/{id}": {
+        get: {
+            summary: "Get combo by ID",
+            tags: ["Combos"],
+            parameters: [
+                {
+                    in: "path",
+                    name: "id",
+                    required: true,
+                    schema: { type: "string" }
+                }
+            ],
+            responses: {
+                200: { description: "Combo details" },
+                404: { description: "Combo not found" },
+                500: { description: "Server error" }
+            }
+        },
+        put: {
+            summary: "Update combo",
+            tags: ["Combos"],
+            parameters: [
+                {
+                    in: "path",
+                    name: "id",
+                    required: true,
+                    schema: { type: "string" }
+                }
+            ],
+            requestBody: {
+                required: true,
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: "object",
+                            properties: {
+                                name: { type: "string" },
+                                description: { type: "string" },
+                                category: { type: "string" },
+                                basePrice: { type: "number" },
+                                image_url: { type: "string" },
+                                discount: { type: "number" },
+                                items: { type: "array" },
+                                isActive: { type: "boolean" }
+                            }
+                        }
+                    }
+                }
+            },
+            responses: {
+                200: { description: "Combo updated successfully" },
+                404: { description: "Combo not found" }
+            }
+        },
+        delete: {
+            summary: "Delete combo",
+            tags: ["Combos"],
+            parameters: [
+                {
+                    in: "path",
+                    name: "id",
+                    required: true,
+                    schema: { type: "string" }
+                }
+            ],
+            responses: {
+                200: { description: "Combo deleted successfully" },
+                404: { description: "Combo not found" },
+                500: { description: "Server error" }
             }
         }
     }
