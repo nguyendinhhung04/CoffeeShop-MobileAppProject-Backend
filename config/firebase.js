@@ -10,7 +10,7 @@
 
 const admin = require("firebase-admin");
 // const serviceAccount = require("/etc/secrets/coffeeshop-d92d4-firebase-adminsdk-fbsvc-64f8326fbe.json");
-const serviceAccount = require("../coffeeshop-d92d4-firebase-adminsdk-fbsvc-64f8326fbe.json") || require("/etc/secrets/coffeeshop-d92d4-firebase-adminsdk-fbsvc-64f8326fbe.json");
+const serviceAccount = require("../coffeeshop-d92d4-firebase-adminsdk-fbsvc-2c83c45876.json") || require("/etc/secrets/coffeeshop-d92d4-firebase-adminsdk-fbsvc-2c83c45876.json");
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
