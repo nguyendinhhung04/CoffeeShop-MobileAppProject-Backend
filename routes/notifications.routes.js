@@ -67,7 +67,7 @@ notiRouter.post("/test", async (req, res) => {
 
 });
 
-notiRouter.get("/:id", async (req, res) => {
+notiRouter.get("/user/:id", async (req, res) => {
 
   try {
     //find all notifications by userId
