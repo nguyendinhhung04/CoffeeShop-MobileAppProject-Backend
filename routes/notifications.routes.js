@@ -3,6 +3,7 @@ const notiRouter = express.Router();
 const FcmToken = require("../models/fcmToken.model");
 const admin = require("../config/firebase");
 
+const Notification = require("../models/notifications.model");
 const NotiUtils = require("../utils/notifications.utils");
 
 notiRouter.post("/savetoken", async (req, res) => {
@@ -60,6 +61,18 @@ notiRouter.post("/test", async (req, res) => {
   try {
     await admin.messaging().send(message);
     res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+
+});
+
+notiRouter.get("/:id", async (req, res) => {
+
+  try {
+    //find all notifications by userId
+    const notifications = await Notification.find({ userId: req.params.id }).sort({ createdAt: -1 });
+    res.json(notifications);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

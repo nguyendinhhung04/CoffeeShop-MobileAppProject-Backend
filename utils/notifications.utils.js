@@ -65,6 +65,7 @@ const sendNotification = async (userId, title, body) => {
     }
 }
 
+
 module.exports = {
     saveNotification,
     saveNotifications,
