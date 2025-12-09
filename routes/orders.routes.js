@@ -159,7 +159,7 @@ router.patch("/:id/status", async (req, res) => {
 
       await NotiUtils.sendNotification( notifications.userId, notifications.title, notifications.body );
       console.log(notifications);
-      
+
       // await Promise.all(notifications);
 
       return res.json({

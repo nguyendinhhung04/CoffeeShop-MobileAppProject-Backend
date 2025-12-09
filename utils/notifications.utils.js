@@ -1,4 +1,5 @@
 const Notification = require("../models/notifications.model");
+const FcmToken = require("../models/fcmToken.model");
 const admin = require("../config/firebase.js");
 
 const saveNotification = async (userId, title, body) => {
