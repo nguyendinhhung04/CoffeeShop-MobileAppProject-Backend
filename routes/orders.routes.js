@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 const Order = require("../models/orders.model");
 const FcmToken = require("../models/fcmToken.model");
+const NotiUtils = require("../utils/notifications.utils");
 
 // --- Tạo đơn ---
 router.post("/", async (req, res) => {
@@ -125,24 +126,29 @@ router.patch("/:id/status", async (req, res) => {
         });
       }
 
-      // Send notification to each device
-      const notifications = fcmTokens.map(async (tokenDoc) => {
-        try {
-          const message = {
-            notification: {
-              title: "Order Status Update",
-              body: `Your order status has been updated to ${status}`
-            },
-            token: tokenDoc.deviceToken,
-          };
-          return await admin.messaging().send(message);
-        } catch (error) {
-          console.error(`Failed to send notification to token ${tokenDoc.deviceToken}:`, error);
-          return null;
-        }
-      });
+      // // Send notification to each device
+      // const notifications = fcmTokens.map(async (tokenDoc) => {
+      //   try {
+      //     const message = {
+      //       notification: {
+      //         title: "Order Status Update",
+      //         body: `Your order status has been updated to ${status}`
+      //       },
+      //       token: tokenDoc.deviceToken,
+      //     };
+      //     return await admin.messaging().send(message);
+      //   } catch (error) {
+      //     console.error(`Failed to send notification to token ${tokenDoc.deviceToken}:`, error);
+      //     return null;
+      //   }
+      // });
 
-      await Promise.all(notifications);
+      const notifications = await NotiUtils.saveNotification(order.userId,
+          "Order Status Update",
+          `Your order status has been updated to ${status}`
+      )
+
+      // await Promise.all(notifications);
 
       return res.json({
         message: "Order status updated and notifications sent successfully",

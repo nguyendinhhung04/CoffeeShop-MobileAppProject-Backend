@@ -3,7 +3,7 @@ const notiRouter = express.Router();
 const FcmToken = require("../models/fcmToken.model");
 const admin = require("../config/firebase");
 
-
+const NotiUtils = require("../utils/notifications.utils");
 
 notiRouter.post("/savetoken", async (req, res) => {
   try {
