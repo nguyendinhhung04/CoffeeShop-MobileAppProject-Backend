@@ -147,7 +147,19 @@ router.patch("/:id/status", async (req, res) => {
           "Order Status Update",
           `Your order status has been updated to ${status}`
       )
+
+      if (!notifications){
+        return res.json(
+            {
+                message: "Order status updated successfully (notification save failed)",
+                order,
+            }
+        )
+      }
+
+      await NotiUtils.sendNotification( notifications.userId, notifications.title, notifications.body );
       console.log(notifications);
+      
       // await Promise.all(notifications);
 
       return res.json({
