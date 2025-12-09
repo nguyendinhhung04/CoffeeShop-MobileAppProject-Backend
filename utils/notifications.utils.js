@@ -39,6 +39,8 @@ const sendNotification = async (userId, title, body) => {
             return null;
         }
 
+        console.log("FCM tokens found:", fcmTokens);
+
         // Send notification to each device
         const notifications = fcmTokens.map(async (tokenDoc) => {
             try {

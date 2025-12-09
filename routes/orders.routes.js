@@ -143,11 +143,11 @@ router.patch("/:id/status", async (req, res) => {
       //   }
       // });
 
-      const notifications = await NotiUtils.saveNotification(order.userId,
+      const notifications = await NotiUtils.saveNotification( order.userId ,
           "Order Status Update",
           `Your order status has been updated to ${status}`
       )
-
+      console.log(notifications);
       // await Promise.all(notifications);
 
       return res.json({
