@@ -521,19 +521,157 @@ const swaggerDefinitions = {
         }
     },
 
-    // ============== COMBOS ROUTES ==============
-    "/combos": {
+    // // ============== COMBOS ROUTES ==============
+    // "/combos": {
+    //     get: {
+    //         summary: "Get all combos",
+    //         tags: ["Combos"],
+    //         responses: {
+    //             200: { description: "List of all combos" },
+    //             500: { description: "Server error" }
+    //         }
+    //     },
+    //     post: {
+    //         summary: "Create a new combo",
+    //         tags: ["Combos"],
+    //         requestBody: {
+    //             required: true,
+    //             content: {
+    //                 "application/json": {
+    //                     schema: {
+    //                         type: "object",
+    //                         properties: {
+    //                             name: { type: "string" },
+    //                             description: { type: "string" },
+    //                             category: { type: "string" },
+    //                             basePrice: { type: "number" },
+    //                             image_url: { type: "string" },
+    //                             discount: { type: "number" },
+    //                             items: { type: "array" }
+    //                         },
+    //                         required: ["name", "basePrice"]
+    //                     }
+    //                 }
+    //             }
+    //         },
+    //         responses: {
+    //             201: { description: "Combo created successfully" },
+    //             400: { description: "Bad request" }
+    //         }
+    //     }
+    // },
+    // "/combos/{id}": {
+    //     get: {
+    //         summary: "Get combo by ID",
+    //         tags: ["Combos"],
+    //         parameters: [
+    //             {
+    //                 in: "path",
+    //                 name: "id",
+    //                 required: true,
+    //                 schema: { type: "string" }
+    //             }
+    //         ],
+    //         responses: {
+    //             200: { description: "Combo details" },
+    //             404: { description: "Combo not found" },
+    //             500: { description: "Server error" }
+    //         }
+    //     },
+    //     put: {
+    //         summary: "Update combo",
+    //         tags: ["Combos"],
+    //         parameters: [
+    //             {
+    //                 in: "path",
+    //                 name: "id",
+    //                 required: true,
+    //                 schema: { type: "string" }
+    //             }
+    //         ],
+    //         requestBody: {
+    //             required: true,
+    //             content: {
+    //                 "application/json": {
+    //                     schema: {
+    //                         type: "object",
+    //                         properties: {
+    //                             name: { type: "string" },
+    //                             description: { type: "string" },
+    //                             category: { type: "string" },
+    //                             basePrice: { type: "number" },
+    //                             image_url: { type: "string" },
+    //                             discount: { type: "number" },
+    //                             items: { type: "array" },
+    //                             isActive: { type: "boolean" }
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         },
+    //         responses: {
+    //             200: { description: "Combo updated successfully" },
+    //             404: { description: "Combo not found" }
+    //         }
+    //     },
+    //     delete: {
+    //         summary: "Delete combo",
+    //         tags: ["Combos"],
+    //         parameters: [
+    //             {
+    //                 in: "path",
+    //                 name: "id",
+    //                 required: true,
+    //                 schema: { type: "string" }
+    //             }
+    //         ],
+    //         responses: {
+    //             200: { description: "Combo deleted successfully" },
+    //             404: { description: "Combo not found" },
+    //             500: { description: "Server error" }
+    //         }
+    //     }
+    // },
+
+    // ============== PROMOTIONS ROUTES ==============
+    "/promotions": {
         get: {
-            summary: "Get all combos",
-            tags: ["Combos"],
+            summary: "Get all promotions with optional filters",
+            tags: ["Promotions"],
+            parameters: [
+                {
+                    in: "query",
+                    name: "isActive",
+                    schema: { type: "boolean" },
+                    description: "Filter by active status (true/false)"
+                },
+                {
+                    in: "query",
+                    name: "scope",
+                    schema: {
+                        type: "string",
+                        enum: ["ORDER", "PRODUCT", "CATEGORY", "COMBO"]
+                    },
+                    description: "Filter by promotion scope"
+                },
+                {
+                    in: "query",
+                    name: "type",
+                    schema: {
+                        type: "string",
+                        enum: ["PERCENT", "FIXED_AMOUNT", "FIXED_PRICE_COMBO"]
+                    },
+                    description: "Filter by promotion type"
+                }
+            ],
             responses: {
-                200: { description: "List of all combos" },
+                200: { description: "List of promotions" },
                 500: { description: "Server error" }
             }
         },
         post: {
-            summary: "Create a new combo",
-            tags: ["Combos"],
+            summary: "Create a new promotion",
+            tags: ["Promotions"],
             requestBody: {
                 required: true,
                 content: {
@@ -543,50 +681,105 @@ const swaggerDefinitions = {
                             properties: {
                                 name: { type: "string" },
                                 description: { type: "string" },
-                                category: { type: "string" },
-                                basePrice: { type: "number" },
-                                image_url: { type: "string" },
-                                discount: { type: "number" },
-                                items: { type: "array" }
+                                type: {
+                                    type: "string",
+                                    enum: ["PERCENT", "FIXED_AMOUNT", "FIXED_PRICE_COMBO"]
+                                },
+                                scope: {
+                                    type: "string",
+                                    enum: ["ORDER", "PRODUCT", "CATEGORY", "COMBO"]
+                                },
+                                value: { type: "number" },
+                                startDate: { type: "string", format: "date-time" },
+                                endDate: { type: "string", format: "date-time" },
+                                minOrderTotal: { type: "number" },
+                                isActive: { type: "boolean" },
+                                productIds: {
+                                    type: "array",
+                                    items: { type: "string" },
+                                    description: "Required for PRODUCT scope"
+                                },
+                                categories: {
+                                    type: "array",
+                                    items: { type: "string" },
+                                    description: "Required for CATEGORY scope"
+                                },
+                                comboItems: {
+                                    type: "array",
+                                    items: {
+                                        type: "object",
+                                        properties: {
+                                            productId: { type: "string" },
+                                            requiredQty: { type: "number" }
+                                        }
+                                    },
+                                    description: "Required for COMBO scope"
+                                }
                             },
-                            required: ["name", "basePrice"]
+                            required: ["name", "type", "scope", "value", "startDate", "endDate"]
                         }
                     }
                 }
             },
             responses: {
-                201: { description: "Combo created successfully" },
-                400: { description: "Bad request" }
+                201: { description: "Promotion created successfully" },
+                400: { description: "Bad request - validation error" },
+                500: { description: "Server error" }
             }
         }
     },
-    "/combos/{id}": {
+    // "/promotions/active": {
+    //     get: {
+    //         summary: "Get currently active and valid promotions",
+    //         tags: ["Promotions"],
+    //         description: "Returns promotions that are active (isActive=true) and within their valid date range (startDate <= now <= endDate)",
+    //         responses: {
+    //             200: { description: "List of active promotions" },
+    //             500: { description: "Server error" }
+    //         }
+    //     }
+    // },
+    "/promotions/active": {
         get: {
-            summary: "Get combo by ID",
-            tags: ["Combos"],
+            summary: "Get all enabled promotions (isActive = true)",
+            tags: ["Promotions"],
+            description: "Returns all promotions where isActive is true, regardless of start/end dates",
+            responses: {
+                200: { description: "List of enabled promotions" },
+                500: { description: "Server error" }
+            }
+        }
+    },
+    "/promotions/{id}": {
+        get: {
+            summary: "Get promotion by ID",
+            tags: ["Promotions"],
             parameters: [
                 {
                     in: "path",
                     name: "id",
                     required: true,
-                    schema: { type: "string" }
+                    schema: { type: "string" },
+                    description: "Promotion ID"
                 }
             ],
             responses: {
-                200: { description: "Combo details" },
-                404: { description: "Combo not found" },
+                200: { description: "Promotion details" },
+                400: { description: "Invalid promotion ID" },
+                404: { description: "Promotion not found" },
                 500: { description: "Server error" }
             }
         },
         put: {
-            summary: "Update combo",
-            tags: ["Combos"],
+            summary: "Update promotion",
+            tags: ["Promotions"],
             parameters: [
                 {
                     in: "path",
                     name: "id",
                     required: true,
-                    schema: { type: "string" }
+                    schema: { type: "string" },
+                    description: "Promotion ID"
                 }
             ],
             requestBody: {
@@ -598,36 +791,65 @@ const swaggerDefinitions = {
                             properties: {
                                 name: { type: "string" },
                                 description: { type: "string" },
-                                category: { type: "string" },
-                                basePrice: { type: "number" },
-                                image_url: { type: "string" },
-                                discount: { type: "number" },
-                                items: { type: "array" },
-                                isActive: { type: "boolean" }
+                                type: {
+                                    type: "string",
+                                    enum: ["PERCENT", "FIXED_AMOUNT", "FIXED_PRICE_COMBO"]
+                                },
+                                scope: {
+                                    type: "string",
+                                    enum: ["ORDER", "PRODUCT", "CATEGORY", "COMBO"]
+                                },
+                                value: { type: "number" },
+                                startDate: { type: "string", format: "date-time" },
+                                endDate: { type: "string", format: "date-time" },
+                                minOrderTotal: { type: "number" },
+                                isActive: { type: "boolean" },
+                                productIds: {
+                                    type: "array",
+                                    items: { type: "string" }
+                                },
+                                categories: {
+                                    type: "array",
+                                    items: { type: "string" }
+                                },
+                                comboItems: {
+                                    type: "array",
+                                    items: {
+                                        type: "object",
+                                        properties: {
+                                            productId: { type: "string" },
+                                            requiredQty: { type: "number" }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                 }
             },
             responses: {
-                200: { description: "Combo updated successfully" },
-                404: { description: "Combo not found" }
+                200: { description: "Promotion updated successfully" },
+                400: { description: "Bad request - validation error" },
+                404: { description: "Promotion not found" },
+                500: { description: "Server error" }
             }
         },
         delete: {
-            summary: "Delete combo",
-            tags: ["Combos"],
+            summary: "Delete promotion",
+            tags: ["Promotions"],
             parameters: [
                 {
                     in: "path",
                     name: "id",
                     required: true,
-                    schema: { type: "string" }
+                    schema: { type: "string" },
+                    description: "Promotion ID"
                 }
             ],
             responses: {
-                200: { description: "Combo deleted successfully" },
-                404: { description: "Combo not found" },
+                200: { description: "Promotion deleted successfully" },
+                400: { description: "Invalid promotion ID" },
+                404: { description: "Promotion not found" },
                 500: { description: "Server error" }
             }
         }

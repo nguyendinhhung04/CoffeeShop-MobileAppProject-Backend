@@ -28,6 +28,18 @@ const DeliverySchema = new mongoose.Schema({
   city: String,
 });
 
+const AppliedPromotionSchema = new mongoose.Schema({
+  promotionId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "promotions",
+    required: true
+  },
+  discountAmount: {
+    type: Number,
+    required: true
+  }
+}, { _id: false });
+
 const OrderSchema = new mongoose.Schema({
   userId: mongoose.Schema.Types.ObjectId,
   orderDate: { type: Date},
@@ -43,6 +55,7 @@ const OrderSchema = new mongoose.Schema({
 
   deliveryAddress: DeliverySchema,
   items: [ItemSchema],
+  appliedPromotions: [AppliedPromotionSchema]
 });
 
 module.exports = mongoose.model("orders", OrderSchema);
