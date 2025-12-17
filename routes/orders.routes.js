@@ -4,6 +4,7 @@ const router = express.Router();
 const Order = require("../models/orders.model");
 const FcmToken = require("../models/fcmToken.model");
 const NotiUtils = require("../utils/notifications.utils");
+const PointUtils = require("../utils/points.utils");
 
 // --- Tạo đơn ---
 router.post("/", async (req, res) => {
@@ -126,28 +127,10 @@ router.patch("/:id/status", async (req, res) => {
         });
       }
 
-      // // Send notification to each device
-      // const notifications = fcmTokens.map(async (tokenDoc) => {
-      //   try {
-      //     const message = {
-      //       notification: {
-      //         title: "Order Status Update",
-      //         body: `Your order status has been updated to ${status}`
-      //       },
-      //       token: tokenDoc.deviceToken,
-      //     };
-      //     return await admin.messaging().send(message);
-      //   } catch (error) {
-      //     console.error(`Failed to send notification to token ${tokenDoc.deviceToken}:`, error);
-      //     return null;
-      //   }
-      // });
-
       const notifications = await NotiUtils.saveNotification( order.userId ,
           "Order Status Update",
           `Your order status has been updated to ${status}`
       )
-
       if (!notifications){
         return res.json(
             {
@@ -161,6 +144,11 @@ router.patch("/:id/status", async (req, res) => {
       console.log(notifications);
 
       // await Promise.all(notifications);
+
+      if(status === "Delivered"){
+        // Additional logic for delivered status if needed
+        await PointUtils.updatePoints(order.userId, order.totalAmount);
+      }
 
       return res.json({
         message: "Order status updated and notifications sent successfully",

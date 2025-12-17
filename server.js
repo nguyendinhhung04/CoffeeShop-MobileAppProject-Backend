@@ -5,6 +5,7 @@ const User = require("./models/users.model");
 const bcrypt = require("bcrypt");
 const Item = require("./models/products.model");
 
+
 const { Server } = require("socket.io");
 const http = require("http");
 
@@ -15,6 +16,7 @@ const comboRoutes = require("./routes/combos.routes");
 const itemRoutes = require("./routes/items.routes");
 const favouriteRoutes = require("./routes/favorites.routes");
 const promotionRoutes = require("./routes/promotions.routes");
+const pointsRoutes = require("./routes/points.route");
 
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpecs = require("./config/swagger");
@@ -99,6 +101,8 @@ app.use("/combos", comboRoutes);
 app.use("/favorites", favouriteRoutes);
 
 app.use("/promotions",promotionRoutes );
+
+app.use("/points", pointsRoutes);
 
 // Test connection route
 app.get("/testconnection", async (req, res) => {
