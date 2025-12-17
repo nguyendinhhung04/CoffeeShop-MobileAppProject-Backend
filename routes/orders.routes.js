@@ -18,12 +18,12 @@ router.post("/", async (req, res) => {
     {
       return res.status(400).json({ error: "Invalid points used for discount" });
     }
-    
+
 
     try {
 
       const order = await Order.create(req.body);
-
+      await PointUtils.discountWithPoint(req.body.userId, req.body.usedPointAmount);
       res.status(201).json({
         message: "Order created successfully",
         order,
@@ -51,6 +51,8 @@ router.delete("/usercancell/:id", async (req, res) => {
     if (!order) {
       return res.status(404).json({ error: "Order not found" });
     }
+
+    PointsUtils.refundPoints(order.userId, order.usedPointAmount);
 
     res.json({
       message: "Order cancelled successfully",
@@ -167,6 +169,9 @@ router.patch("/:id/status", async (req, res) => {
       if(status === "Delivered"){
         // Additional logic for delivered status if needed
         await PointUtils.updatePoints(order.userId, order.totalAmount);
+      }
+      if(status === "Cancelled"){
+        await PointUtils.refundPoints(order.userId, order.usedPointAmount);
       }
 
       return res.json({
