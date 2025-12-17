@@ -79,5 +79,19 @@ notiRouter.get("/user/:id", async (req, res) => {
 
 });
 
+notiRouter.post("/sendAllClient", async (req, res) => {
+
+  try{
+    const { title, body } = req.body;
+    await NotiUtils.sendNotificationToAllClient(title, body);
+    res.json({ success: true });
+  }
+  catch(err)
+  {
+    return res.status(500).json({ error: err.message });
+  }
+
+})
+
 
 module.exports = notiRouter;

@@ -65,9 +65,48 @@ const sendNotification = async (userId, title, body) => {
     }
 }
 
+const sendNotificationToAllClient = async (title, body) => {
+    try {
+        // Lấy toàn bộ FCM token
+        const fcmTokens = await FcmToken.find({});
+
+        if (!fcmTokens || fcmTokens.length === 0) {
+            console.log("No FCM tokens found");
+            return null;
+        }
+
+        const tokens = fcmTokens.map(t => t.deviceToken);
+
+        const message = {
+            notification: {
+                title: title,
+                body: body
+            },
+            tokens: tokens
+        };
+
+        const response = await admin.messaging().sendEachForMulticast(message);
+
+        console.log(`Notification sent to ${response.successCount} devices`);
+        if (response.failureCount > 0) {
+            console.log("Failed tokens:", response.responses
+                .map((res, idx) => !res.success ? tokens[idx] : null)
+                .filter(Boolean)
+            );
+        }
+
+        return response;
+    } catch (error) {
+        console.error("Send notification to all clients error:", error);
+        return null;
+    }
+};
+
+
 
 module.exports = {
     saveNotification,
     saveNotifications,
-    sendNotification
+    sendNotification,
+    sendNotificationToAllClient
 };
