@@ -55,7 +55,12 @@ const OrderSchema = new mongoose.Schema({
 
   deliveryAddress: DeliverySchema,
   items: [ItemSchema],
-  appliedPromotions: [AppliedPromotionSchema]
+
+  appliedPromotions: [AppliedPromotionSchema],
+  //----------------------------------------------//
+  usedPointAmount: Number,
+  discountByPointAmount: Number,
+
 });
 
 module.exports = mongoose.model("orders", OrderSchema);

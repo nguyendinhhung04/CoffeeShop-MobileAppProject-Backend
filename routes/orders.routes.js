@@ -5,18 +5,37 @@ const Order = require("../models/orders.model");
 const FcmToken = require("../models/fcmToken.model");
 const NotiUtils = require("../utils/notifications.utils");
 const PointUtils = require("../utils/points.utils");
+const Points = require("../models/points.model");
 
 // --- Tạo đơn ---
 router.post("/", async (req, res) => {
-  try {
-    const order = await Order.create(req.body);
 
-    res.status(201).json({
-      message: "Order created successfully",
-      order,
-    });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
+  try
+  {
+    //find PointRecord by userId and check if the point is enough
+    const pointRecord = await Points.find({ userId: req.body.userId });
+    if (pointRecord.points * 10000 !== req.body.discountByPointAmount  )
+    {
+      return res.status(400).json({ error: "Invalid points used for discount" });
+    }
+    
+
+    try {
+
+      const order = await Order.create(req.body);
+
+      res.status(201).json({
+        message: "Order created successfully",
+        order,
+      });
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
+
+  }
+  catch(err)
+  {
+    return res.status(400).json({ error: "Error validating points used for discount" });
   }
 });
 
