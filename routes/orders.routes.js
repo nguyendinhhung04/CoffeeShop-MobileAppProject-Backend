@@ -6,6 +6,7 @@ const FcmToken = require("../models/fcmToken.model");
 const NotiUtils = require("../utils/notifications.utils");
 const PointUtils = require("../utils/points.utils");
 const Points = require("../models/points.model");
+const PointsUtils = require("../utils/points.utils");
 
 // --- Tạo đơn ---
 router.post("/", async (req, res) => {
@@ -53,7 +54,7 @@ router.delete("/usercancell/:id", async (req, res) => {
       return res.status(404).json({ error: "Order not found" });
     }
 
-    PointsUtils.refundPoints(order.userId, order.usedPointAmount);
+    await PointsUtils.refundPoints(order.userId, order.usedPointAmount);
 
     res.json({
       message: "Order cancelled successfully",
