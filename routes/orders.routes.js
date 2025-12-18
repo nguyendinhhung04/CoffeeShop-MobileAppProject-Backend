@@ -15,6 +15,9 @@ router.post("/", async (req, res) => {
   {
     //find PointRecord by userId and check if the point is enough
     const pointRecord = await Points.find({ userId: req.body.userId });
+    if (!pointRecord){
+      await PointUtils.createPointRecordIfNotExists(req.body.userId);
+    }
     if (pointRecord.points * 10000 < req.body.discountByPointAmount  )
     {
       console.log(pointRecord.points);

@@ -7,6 +7,10 @@ const updatePoints = async (userId, billAmount) => {
     try {
         let userPoints = await Point.findOne({ userId });
 
+        if(!userPoints) {
+            await createPointRecordIfNotExists(userId);
+        }
+
         if (userPoints) {
             // Update existing points
             userPoints.points += pointsToAdd;
@@ -29,6 +33,10 @@ const discountWithPoint = async (userId, pointsToUse) => {
     try {
         let userPoints = await Point.findOne({ userId });
 
+        if(!userPoints) {
+            await createPointRecordIfNotExists(userId);
+        }
+
         if (!userPoints || userPoints.points < pointsToUse) {
             throw new Error('Insufficient points');
         }
@@ -46,7 +54,10 @@ const discountWithPoint = async (userId, pointsToUse) => {
 const refundPoints = async (userId, pointsToRefund) => {
     try {
         let userPoints = await Point.findOne({ userId });
-
+        if (!userPoints) {
+            // Create new points record if not exists
+            await createPointRecordIfNotExists(userId);
+        }
         if (userPoints) {
             // Update existing points
             userPoints.points += pointsToRefund;
@@ -59,8 +70,26 @@ const refundPoints = async (userId, pointsToRefund) => {
     }
 }
 
+//create point record ìf not exists
+const createPointRecordIfNotExists = async (userId) => {
+    try {
+        let userPoints = await Point.findOne({ userId });
+
+        if (!userPoints) {
+            // Create new points record
+            userPoints = new Point({ userId, points: 0 });
+            await userPoints.save();
+        }
+
+        return userPoints;
+    } catch (error) {
+        throw new Error('Error creating point record: ' + error.message);
+    }
+}
+
 module.exports = {
     updatePoints,
     discountWithPoint,
-    refundPoints
+    refundPoints,
+    createPointRecordIfNotExists
 };
