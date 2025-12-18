@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const Promotion = require("../models/promotions.model");
-const NotiUtls = require("../utils/notification.utils");
+const NotiUtils = require("../utils/notifications.utils");
 
 // --- Helper function: Validate promotion uniqueness ---
 const validatePromotion = async (scope, productIds, categories, comboItems, excludePromotionId = null) => {
@@ -227,7 +227,7 @@ router.post("/", async (req, res) => {
 
         const promotion = await Promotion.create(promotionData);
 
-        await NotiUtls.sendNotificationToAllClient("New Promotion arrived", `Check out our new promotion: ${promotion.name}`);
+        await NotiUtils.sendNotificationToAllClient("New Promotion arrived", `Check out our new promotion: ${promotion.name}`);
 
         res.status(201).json(promotion);
     } catch (err) {
