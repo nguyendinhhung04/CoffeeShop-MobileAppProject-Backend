@@ -87,6 +87,8 @@ const sendNotificationToAllClient = async (title, body) => {
 
         const response = await admin.messaging().sendEachForMulticast(message);
 
+
+
         console.log(`Notification sent to ${response.successCount} devices`);
         if (response.failureCount > 0) {
             console.log("Failed tokens:", response.responses
@@ -94,6 +96,17 @@ const sendNotificationToAllClient = async (title, body) => {
                 .filter(Boolean)
             );
         }
+
+        // Lưu thông báo vào DB cho mỗi user
+        const uniqueUserIds = [...new Set(fcmTokens.map(t => t.userId))];
+        const notificationsToSave = uniqueUserIds.map(userId => ({
+            userId,
+            title,
+            body,
+            createdAt: new Date()
+        }));
+        await Notification.insertMany(notificationsToSave);
+        console.log(`${notificationsToSave.length} notifications saved to database`);
 
         return response;
     } catch (error) {
