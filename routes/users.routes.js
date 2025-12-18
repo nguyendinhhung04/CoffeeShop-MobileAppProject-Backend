@@ -32,15 +32,22 @@ router.get("/users", async (req, res) => {
 // --- Route đăng ký user (tạo trước vài user để test) ---
 router.post("/register", async (req, res) => {
     try {
-        const { name, username, password, email, phone, role } = req.body;
+        const { fullName, username, password, email, phone  } = req.body;
 
         const newUser = await User.create({
-            name,
-            username,
+            fullName: fullName,
+            username: username,
             password: password,
-            email,
-            phone,
-            role,
+            email: email,
+            phone: phone,
+            role: "customer",
+            addresses:{
+                street: "",
+                ward: "",
+                district: "",
+                city: "",
+                isDefault: false
+            }
         });
 
         res.status(201).json({ message: "✅ User registered", user: newUser });
