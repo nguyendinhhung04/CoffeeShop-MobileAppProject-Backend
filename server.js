@@ -21,14 +21,10 @@ const pointsRoutes = require("./routes/points.route");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpecs = require("./config/swagger");
 
-const cors = require("cors"); // added
-
 dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
-// allow CORS for all origins (Express)
-app.use(cors()); // added
 
 // ⚡ Socket.io
 const io = new Server(server, {
