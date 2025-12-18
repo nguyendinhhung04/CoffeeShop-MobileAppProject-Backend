@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const User = require("../models/users.model");
+const PointUtils = require("../utils/points.utils");
 
 // --- Route test ---
 router.get("/", (req, res) => {
@@ -49,6 +50,10 @@ router.post("/register", async (req, res) => {
                 isDefault: false
             }
         });
+
+        //Console log the newUser id
+        console.log("New user ID:", newUser._id);
+        await PointUtils.createPointRecordIfNotExists(newUser._id);
 
         res.status(201).json({ message: "✅ User registered", user: newUser });
     } catch (err) {
