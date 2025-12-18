@@ -79,7 +79,7 @@ notiRouter.get("/user/:id", async (req, res) => {
 
 });
 
-notiRouter.post("/sendAllClient", async (req, res) => {
+notiRouter.post("/sendallclient", async (req, res) => {
 
   try{
     const { title, body } = req.body;
